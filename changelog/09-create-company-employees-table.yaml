@@ -1,0 +1,44 @@
+databaseChangeLog:
+  - changeSet:
+      id: 9
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: company_employees
+      changes:
+        - createTable:
+            tableName: company_employees
+            columns:
+              - column:
+                  name: company_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: employee_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: company_employees
+            columnNames: company_id, employee_id
+            constraintName: pk_company_employee
+        - addUniqueConstraint:
+            tableName: company_employees
+            columnNames: company_id, employee_id
+            constraintName: company_employee
+        - addForeignKeyConstraint:
+            baseTableName: company_employees
+            baseColumnNames: company_id
+            constraintName: fk_company_id
+            referencedTableName: companies
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: company_employees
+            baseColumnNames: employee_id
+            constraintName: fk_employee_id
+            referencedTableName: employees
+            referencedColumnNames: id

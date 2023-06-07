@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: orders
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: integer
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: customer_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: orders
+            columnNames: id
+            constraintName: pk_order_id
+        - addUniqueConstraint:
+            tableName: orders
+            columnNames: id
+            constraintName: uq_order_id
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: status_id
+            constraintName: fk_order_status_id
+            referencedTableName: order_statuses
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: customer_id
+            constraintName: fk_order_customer_id
+            referencedTableName: customers
+            referencedColumnNames: id

@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: 13
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: order_skills
+      changes:
+        - createTable:
+            tableName: order_skills
+            columns:
+              - column:
+                  name: skill_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: order_skills
+            columnNames: skill_id, order_id
+            constraintName: pk_order_position
+        - addUniqueConstraint:
+            tableName: order_skills
+            columnNames: skill_id, order_id
+            constraintName: uq_order_skill
+        - addForeignKeyConstraint:
+            baseTableName: order_skills
+            baseColumnNames: skill_id
+            constraintName: fk_order_skill_id
+            referencedTableName: skills
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: order_skills
+            baseColumnNames: order_id
+            constraintName: fk_order_id
+            referencedTableName: orders
+            referencedColumnNames: id

@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: order_positions
+      changes:
+        - createTable:
+            tableName: order_positions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: requirements
+                  type: varchar(512)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: order_positions
+            columnNames: id
+            constraintName: pk_order_positions_id
+        - addUniqueConstraint:
+            tableName: order_positions
+            columnNames: id
+            constraintName: uq_order_positions_id
+        - addForeignKeyConstraint:
+            baseTableName: order_positions
+            baseColumnNames: order_id
+            constraintName: fk_order_id
+            referencedTableName: orders
+            referencedColumnNames: id

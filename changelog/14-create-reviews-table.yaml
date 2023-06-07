@@ -1,0 +1,54 @@
+databaseChangeLog:
+  - changeSet:
+      id: 14
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: reviews
+      changes:
+        - createTable:
+            tableName: reviews
+            columns:
+              - column:
+                  name: customer_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: review
+                  type: varchar(512)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: rating
+                  type: tinyint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: reviews
+            columnNames: customer_id, company_id
+            constraintName: pk_review
+        - addUniqueConstraint:
+            tableName: reviews
+            columnNames: customer_id, company_id
+            constraintName: uq_review
+        - addForeignKeyConstraint:
+            baseTableName: reviews
+            baseColumnNames: customer_id
+            constraintName: fk_customer_review_id
+            referencedTableName: customers
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: reviews
+            baseColumnNames: company_id
+            constraintName: fk_company_review_id
+            referencedTableName: companies
+            referencedColumnNames: id

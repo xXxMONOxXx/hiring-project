@@ -1,0 +1,143 @@
+databaseChangeLog:
+  - changeSet:
+      id: 16
+      author: mishastoma
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_customer_id
+            tableName: customers
+        - createIndex:
+            columns:
+              - column:
+                  name: username
+            indexName: idx_customer_username
+            tableName: customers
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_order_status_id
+            tableName: order_statuses
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_order_id
+            tableName: orders
+        - createIndex:
+            columns:
+              - column:
+                  name: application_id
+            indexName: idx_application_messages_id
+            tableName: messages
+        - createIndex:
+            columns:
+              - column:
+                  name: sender_id
+            indexName: idx_sender_message_id
+            tableName: messages
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_employee_id
+            tableName: employees
+        - createIndex:
+            columns:
+              - column:
+                  name: username
+            indexName: idx_employee_username
+            tableName: employees
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_employee_details_id
+            tableName: employees
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_skill_id
+            tableName: skills
+        - createIndex:
+            columns:
+              - column:
+                  name: skill_id
+            indexName: idx_employee_skills_skill_id
+            tableName: employee_skills
+        - createIndex:
+            columns:
+              - column:
+                  name: employee_id
+            indexName: idx_employee_skills_employee_id
+            tableName: employee_skills
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_company_id
+            tableName: companies
+        - createIndex:
+            columns:
+              - column:
+                  name: company_id
+            indexName: idx_company_employee_id
+            tableName: company_employees
+        - createIndex:
+            columns:
+              - column:
+                  name: employee_id
+            indexName: idx_employee_company_id
+            tableName: company_employees
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_application_status_id
+            tableName: application_statuses
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_application_id
+            tableName: applications
+        - createIndex:
+            columns:
+              - column:
+                  name: order_position_id
+            indexName: idx_order_applications_id
+            tableName: applications
+        - createIndex:
+            columns:
+              - column:
+                  name: company_id
+            indexName: idx_company_applications_id
+            tableName: applications
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+            indexName: idx_order_position_id
+            tableName: order_positions
+        - createIndex:
+            columns:
+              - column:
+                  name: order_id
+            indexName: idx_order_positions_order_id
+            tableName: order_positions
+        - createIndex:
+            columns:
+              - column:
+                  name: customer_id
+            indexName: idx_review_customer_id
+            tableName: reviews
+        - createIndex:
+            columns:
+              - column:
+                  name: company_id
+            indexName: idx_review_company_id
+            tableName: reviews

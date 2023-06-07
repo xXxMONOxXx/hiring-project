@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: order_statuses
+      changes:
+        - createTable:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: order_statuses
+            columnNames: id
+            constraintName: pk_order_status_id
+        - addUniqueConstraint:
+            tableName: order_statuses
+            columnNames: id
+            constraintName: uq_order_status_id
+        - addUniqueConstraint:
+            tableName: order_statuses
+            columnNames: status
+            constraintName: uq_order_status
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "canceled"
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "completed"
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "failed"
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "on_hold"
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "pending_payment"
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "processing"
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "refunded"

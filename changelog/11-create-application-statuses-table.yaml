@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 11
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: application_statuses
+      changes:
+        - createTable:
+            tableName: application_statuses
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: application_statuses
+            columnNames: id
+            constraintName: pk_application_status_id
+        - addUniqueConstraint:
+            tableName: application_statuses
+            columnNames: id
+            constraintName: uq_application_status_id
+        - addUniqueConstraint:
+            tableName: application_statuses
+            columnNames: status
+            constraintName: uq_application_status
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "accepted"
+        - insert:
+            tableName: order_statuses
+            columns:
+              - column:
+                  name: status
+                  value: "declined"
