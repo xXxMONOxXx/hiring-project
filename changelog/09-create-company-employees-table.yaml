@@ -22,6 +22,9 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+              - column:
+                  name: approved
+                  type: boolean
         - addPrimaryKey:
             tableName: company_employees
             columnNames: company_id, employee_id

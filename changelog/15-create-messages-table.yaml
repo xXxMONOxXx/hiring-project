@@ -32,6 +32,11 @@ databaseChangeLog:
                   type: boolean
                   constraints:
                     nullable: false
+              - column:
+                  name: message
+                  type: varchar(512)
+                  constraints:
+                    nullable: false
         - addPrimaryKey:
             tableName: messages
             columnNames: id
