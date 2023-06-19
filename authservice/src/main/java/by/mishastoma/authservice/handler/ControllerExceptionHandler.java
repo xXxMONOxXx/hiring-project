@@ -7,6 +7,7 @@ import by.mishastoma.authservice.exception.EmployeeNotFoundException;
 import by.mishastoma.authservice.exception.InvalidTokenException;
 import by.mishastoma.authservice.exception.LoginFailedException;
 import by.mishastoma.authservice.exception.UsernameIsOccupiedException;
+import by.mishastoma.authservice.exception.WrongRoleException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -82,6 +83,17 @@ public class ControllerExceptionHandler {
     public ExceptionResponse invalidToken(InvalidTokenException ex) {
         return ExceptionResponse.builder()
                 .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(LocalDateTime.now())
+                .errors(Collections.singletonList(ex.getMessage()))
+                .build();
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(WrongRoleException.class)
+    public ExceptionResponse wrongRole(WrongRoleException ex) {
+        return ExceptionResponse.builder()
+                .status(HttpStatus.FORBIDDEN.value())
                 .timestamp(LocalDateTime.now())
                 .errors(Collections.singletonList(ex.getMessage()))
                 .build();

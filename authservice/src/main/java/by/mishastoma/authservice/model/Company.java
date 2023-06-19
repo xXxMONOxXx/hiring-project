@@ -1,5 +1,6 @@
 package by.mishastoma.authservice.model;
 
+import by.mishastoma.authservice.config.RoleConfig;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +23,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Company implements UserDetails {
+public class Company implements CustomUserDetails {
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
@@ -35,7 +36,7 @@ public class Company implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add((GrantedAuthority) () -> "Company");
+        roles.add(new SimpleGrantedAuthority(RoleConfig.getCOMPANY_ROLE()));
         return roles;
     }
 
@@ -57,6 +58,15 @@ public class Company implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public List<String> getUserAuthoritiesAsStringList() {
+        List<String> authorities = new ArrayList<>();
+        for (GrantedAuthority authority : getAuthorities()) {
+            authorities.add(authority.getAuthority());
+        }
+        return authorities;
     }
 
     @Override

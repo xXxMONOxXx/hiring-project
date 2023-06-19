@@ -2,15 +2,19 @@ package by.mishastoma.authservice.service;
 
 import by.mishastoma.authservice.dto.CompanyRequest;
 import by.mishastoma.authservice.dto.CompanyResponse;
+import by.mishastoma.authservice.dto.DecryptResponse;
+import by.mishastoma.authservice.dto.LoginRequest;
 import by.mishastoma.authservice.dto.TokenResponse;
 import by.mishastoma.authservice.exception.CompanyNotFoundException;
 import by.mishastoma.authservice.exception.LoginFailedException;
 import by.mishastoma.authservice.exception.UsernameIsOccupiedException;
+import by.mishastoma.authservice.exception.WrongRoleException;
 import by.mishastoma.authservice.model.Company;
 import by.mishastoma.authservice.repository.CompanyRepository;
 import by.mishastoma.authservice.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,6 +29,8 @@ public class CompanyService implements BaseAuthService<CompanyRequest, CompanyRe
     private final ModelMapper modelMapper;
     private final CompanyRepository companyRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    @Value("${company.role}")
+    private String companyRole;
 
     @Override
     public CompanyResponse register(CompanyRequest requestEntity) {
@@ -38,7 +44,7 @@ public class CompanyService implements BaseAuthService<CompanyRequest, CompanyRe
     }
 
     @Override
-    public TokenResponse login(CompanyRequest requestEntity) {
+    public TokenResponse login(LoginRequest requestEntity) {
         Optional<Company> optionalCompany = companyRepository.findByUsername(requestEntity.getUsername());
         if (optionalCompany.isEmpty()) {
             throw new LoginFailedException("Username does not exist");
@@ -47,6 +53,15 @@ public class CompanyService implements BaseAuthService<CompanyRequest, CompanyRe
             throw new LoginFailedException("Wrong password");
         }
         return new TokenResponse(jwtTokenUtil.generateJwtToken(optionalCompany.get()));
+    }
+
+    @Override
+    public DecryptResponse decrypt(String token) {
+        DecryptResponse response = jwtTokenUtil.decrypt(token);
+        if (response.getAuthorities() == null || !response.getAuthorities().contains(companyRole)) {
+            throw new WrongRoleException("No company role found in decrypt.");
+        }
+        return response;
     }
 
     @Override

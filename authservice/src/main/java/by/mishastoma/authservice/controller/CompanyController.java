@@ -1,7 +1,10 @@
 package by.mishastoma.authservice.controller;
 
+import by.mishastoma.authservice.config.RoleConfig;
 import by.mishastoma.authservice.dto.CompanyRequest;
 import by.mishastoma.authservice.dto.CompanyResponse;
+import by.mishastoma.authservice.dto.DecryptResponse;
+import by.mishastoma.authservice.dto.LoginRequest;
 import by.mishastoma.authservice.dto.TokenResponse;
 import by.mishastoma.authservice.service.CompanyService;
 import by.mishastoma.authservice.util.JwtTokenUtil;
@@ -31,19 +34,19 @@ public class CompanyController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public TokenResponse login(@RequestBody @Valid CompanyRequest request) {
+    public TokenResponse login(@RequestBody @Valid LoginRequest request) {
         return companyService.login(request);
     }
 
     @GetMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
     public void validateToken(@RequestParam("token") String token) {
-        jwtTokenUtil.validateJwtToken(token);
+        jwtTokenUtil.validateJwtToken(token, RoleConfig.getCOMPANY_ROLE());
     }
 
     @GetMapping("/decrypt")
     @ResponseStatus(HttpStatus.OK)
-    public String decryptToken(@RequestParam("token") String token) {
-        return jwtTokenUtil.getUsernameFromJwtToken(token);
+    public DecryptResponse decryptToken(@RequestParam("token") String token) {
+        return companyService.decrypt(token);
     }
 }

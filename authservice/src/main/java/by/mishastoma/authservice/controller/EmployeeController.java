@@ -1,7 +1,10 @@
 package by.mishastoma.authservice.controller;
 
+import by.mishastoma.authservice.config.RoleConfig;
+import by.mishastoma.authservice.dto.DecryptResponse;
 import by.mishastoma.authservice.dto.EmployeeRequest;
 import by.mishastoma.authservice.dto.EmployeeResponse;
+import by.mishastoma.authservice.dto.LoginRequest;
 import by.mishastoma.authservice.dto.TokenResponse;
 import by.mishastoma.authservice.service.EmployeeService;
 import by.mishastoma.authservice.util.JwtTokenUtil;
@@ -32,19 +35,19 @@ public class EmployeeController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public TokenResponse login(@RequestBody @Valid EmployeeRequest request) {
+    public TokenResponse login(@RequestBody @Valid LoginRequest request) {
         return employeeService.login(request);
     }
 
     @GetMapping("/validate")
     @ResponseStatus(HttpStatus.OK)
     public void validateToken(@RequestParam("token") String token) {
-        jwtTokenUtil.validateJwtToken(token);
+        jwtTokenUtil.validateJwtToken(token, RoleConfig.getEMPLOYEE_ROLE());
     }
 
     @GetMapping("/decrypt")
     @ResponseStatus(HttpStatus.OK)
-    public String decryptToken(@RequestParam("token") String token) {
-        return jwtTokenUtil.getUsernameFromJwtToken(token);
+    public DecryptResponse decryptToken(@RequestParam("token") String token) {
+        return employeeService.decrypt(token);
     }
 }

@@ -1,17 +1,21 @@
 package by.mishastoma.authservice.service;
 
 
+import by.mishastoma.authservice.dto.DecryptResponse;
 import by.mishastoma.authservice.dto.EmployeeRequest;
 import by.mishastoma.authservice.dto.EmployeeResponse;
+import by.mishastoma.authservice.dto.LoginRequest;
 import by.mishastoma.authservice.dto.TokenResponse;
 import by.mishastoma.authservice.exception.EmployeeNotFoundException;
 import by.mishastoma.authservice.exception.LoginFailedException;
 import by.mishastoma.authservice.exception.UsernameIsOccupiedException;
+import by.mishastoma.authservice.exception.WrongRoleException;
 import by.mishastoma.authservice.model.Employee;
 import by.mishastoma.authservice.repository.EmployeeRepository;
 import by.mishastoma.authservice.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,6 +30,8 @@ public class EmployeeService implements BaseAuthService<EmployeeRequest, Employe
     private final ModelMapper modelMapper;
     private final EmployeeRepository employeeRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    @Value("${employee.role}")
+    private String employeeRole;
 
     @Override
     public EmployeeResponse register(EmployeeRequest requestEntity) {
@@ -39,7 +45,7 @@ public class EmployeeService implements BaseAuthService<EmployeeRequest, Employe
     }
 
     @Override
-    public TokenResponse login(EmployeeRequest requestEntity) {
+    public TokenResponse login(LoginRequest requestEntity) {
         Optional<Employee> optionalEmployee = employeeRepository.findByUsername(requestEntity.getUsername());
         if (optionalEmployee.isEmpty()) {
             throw new LoginFailedException("Username does not exist");
@@ -48,6 +54,15 @@ public class EmployeeService implements BaseAuthService<EmployeeRequest, Employe
             throw new LoginFailedException("Wrong password");
         }
         return new TokenResponse(jwtTokenUtil.generateJwtToken(optionalEmployee.get()));
+    }
+
+    @Override
+    public DecryptResponse decrypt(String token) {
+        DecryptResponse response = jwtTokenUtil.decrypt(token);
+        if (response.getAuthorities() == null || !response.getAuthorities().contains(employeeRole)) {
+            throw new WrongRoleException("No employee role found in decrypt.");
+        }
+        return response;
     }
 
     @Override

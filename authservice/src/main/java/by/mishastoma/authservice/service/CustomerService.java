@@ -1,15 +1,20 @@
 package by.mishastoma.authservice.service;
 
+import by.mishastoma.authservice.config.RoleConfig;
 import by.mishastoma.authservice.dto.CustomerRequest;
 import by.mishastoma.authservice.dto.CustomerResponse;
+import by.mishastoma.authservice.dto.DecryptResponse;
+import by.mishastoma.authservice.dto.LoginRequest;
 import by.mishastoma.authservice.dto.TokenResponse;
 import by.mishastoma.authservice.exception.CustomerNotFoundException;
 import by.mishastoma.authservice.exception.LoginFailedException;
 import by.mishastoma.authservice.exception.UsernameIsOccupiedException;
+import by.mishastoma.authservice.exception.WrongRoleException;
 import by.mishastoma.authservice.model.Customer;
 import by.mishastoma.authservice.repository.CustomerRepository;
 import by.mishastoma.authservice.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomerService implements BaseAuthService<CustomerRequest, CustomerResponse>, UserDetailsService {
@@ -38,7 +44,7 @@ public class CustomerService implements BaseAuthService<CustomerRequest, Custome
     }
 
     @Override
-    public TokenResponse login(CustomerRequest requestEntity) {
+    public TokenResponse login(LoginRequest requestEntity) {
         Optional<Customer> optionalCustomer = customerRepository.findByUsername(requestEntity.getUsername());
         if (optionalCustomer.isEmpty()) {
             throw new LoginFailedException("Username does not exist");
@@ -47,6 +53,15 @@ public class CustomerService implements BaseAuthService<CustomerRequest, Custome
             throw new LoginFailedException("Wrong password");
         }
         return new TokenResponse(jwtTokenUtil.generateJwtToken(optionalCustomer.get()));
+    }
+
+    @Override
+    public DecryptResponse decrypt(String token) {
+        DecryptResponse response = jwtTokenUtil.decrypt(token);
+        if (response.getAuthorities() == null || !response.getAuthorities().contains(RoleConfig.getCUSTOMER_ROLE())) {
+            throw new WrongRoleException("No customer role found in decrypt.");
+        }
+        return response;
     }
 
     @Override

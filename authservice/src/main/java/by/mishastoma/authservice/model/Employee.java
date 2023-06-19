@@ -1,5 +1,6 @@
 package by.mishastoma.authservice.model;
 
+import by.mishastoma.authservice.config.RoleConfig;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.Objects;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Employee implements UserDetails {
+public class Employee implements CustomUserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,9 +43,9 @@ public class Employee implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> roles = new ArrayList<>();
-        roles.add((GrantedAuthority) () -> "Employee");
-        return roles;
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(RoleConfig.getEMPLOYEE_ROLE()));
+        return authorities;
     }
 
     @Override
@@ -65,6 +66,16 @@ public class Employee implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+
+    @Override
+    public List<String> getUserAuthoritiesAsStringList() {
+        List<String> authorities = new ArrayList<>();
+        for (GrantedAuthority authority : getAuthorities()) {
+            authorities.add(authority.getAuthority());
+        }
+        return authorities;
     }
 
     @Override
