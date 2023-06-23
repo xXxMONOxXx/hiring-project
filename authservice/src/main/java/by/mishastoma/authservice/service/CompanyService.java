@@ -6,14 +6,18 @@ import by.mishastoma.authservice.dto.DecryptResponse;
 import by.mishastoma.authservice.dto.LoginRequest;
 import by.mishastoma.authservice.dto.TokenResponse;
 import by.mishastoma.authservice.exception.CompanyNotFoundException;
+import by.mishastoma.authservice.exception.InvalidUserException;
 import by.mishastoma.authservice.exception.LoginFailedException;
 import by.mishastoma.authservice.exception.UsernameIsOccupiedException;
 import by.mishastoma.authservice.exception.WrongRoleException;
 import by.mishastoma.authservice.model.Company;
 import by.mishastoma.authservice.repository.CompanyRepository;
 import by.mishastoma.authservice.util.JwtTokenUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,14 +30,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CompanyService implements BaseAuthService<CompanyRequest, CompanyResponse>, UserDetailsService {
 
+    @Value("${rabbitmq.queue.company.auth}")
+    private String queueName;
+    private final RabbitTemplate rabbitTemplate;
     private final ModelMapper modelMapper;
     private final CompanyRepository companyRepository;
     private final JwtTokenUtil jwtTokenUtil;
+    private final ObjectMapper objectMapper;
     @Value("${company.role}")
     private String companyRole;
 
     @Override
     public CompanyResponse register(CompanyRequest requestEntity) {
+        try {
+            rabbitTemplate.convertAndSend(queueName, objectMapper.writeValueAsString(requestEntity));
+        } catch (JsonProcessingException e) {
+            throw new InvalidUserException(e.getMessage());
+        }
         Optional<Company> optionalCompany = companyRepository.findByUsername(requestEntity.getUsername());
         if (optionalCompany.isPresent()) {
             throw new UsernameIsOccupiedException(requestEntity.getUsername());
@@ -45,6 +58,11 @@ public class CompanyService implements BaseAuthService<CompanyRequest, CompanyRe
 
     @Override
     public TokenResponse login(LoginRequest requestEntity) {
+        try {
+            rabbitTemplate.convertAndSend(queueName, objectMapper.writeValueAsString(requestEntity));
+        } catch (JsonProcessingException e) {
+            throw new InvalidUserException(e.getMessage());
+        }
         Optional<Company> optionalCompany = companyRepository.findByUsername(requestEntity.getUsername());
         if (optionalCompany.isEmpty()) {
             throw new LoginFailedException("Username does not exist");
@@ -57,6 +75,7 @@ public class CompanyService implements BaseAuthService<CompanyRequest, CompanyRe
 
     @Override
     public DecryptResponse decrypt(String token) {
+        rabbitTemplate.convertAndSend(queueName, token);
         DecryptResponse response = jwtTokenUtil.decrypt(token);
         if (response.getAuthorities() == null || !response.getAuthorities().contains(companyRole)) {
             throw new WrongRoleException("No company role found in decrypt.");

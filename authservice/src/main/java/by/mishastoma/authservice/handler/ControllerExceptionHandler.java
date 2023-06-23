@@ -5,6 +5,7 @@ import by.mishastoma.authservice.exception.CompanyNotFoundException;
 import by.mishastoma.authservice.exception.CustomerNotFoundException;
 import by.mishastoma.authservice.exception.EmployeeNotFoundException;
 import by.mishastoma.authservice.exception.InvalidTokenException;
+import by.mishastoma.authservice.exception.InvalidUserException;
 import by.mishastoma.authservice.exception.LoginFailedException;
 import by.mishastoma.authservice.exception.UsernameIsOccupiedException;
 import by.mishastoma.authservice.exception.WrongRoleException;
@@ -94,6 +95,17 @@ public class ControllerExceptionHandler {
     public ExceptionResponse wrongRole(WrongRoleException ex) {
         return ExceptionResponse.builder()
                 .status(HttpStatus.FORBIDDEN.value())
+                .timestamp(LocalDateTime.now())
+                .errors(Collections.singletonList(ex.getMessage()))
+                .build();
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidUserException.class)
+    public ExceptionResponse wrongRole(InvalidUserException ex) {
+        return ExceptionResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
                 .timestamp(LocalDateTime.now())
                 .errors(Collections.singletonList(ex.getMessage()))
                 .build();
