@@ -12,8 +12,6 @@ import by.mishastoma.customerservice.exception.OrderNotFoundException;
 import by.mishastoma.customerservice.exception.OrderPositionNotFoundException;
 import by.mishastoma.customerservice.exception.ReviewNotFoundException;
 import by.mishastoma.customerservice.exception.StatusNotFoundException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -32,8 +30,6 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class ControllerExceptionHandler {
 
-    private final ObjectMapper objectMapper;
-
     @ResponseBody
     @ExceptionHandler(AuthServiceNotAvailableException.class)
     @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
@@ -49,17 +45,12 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(NotValidTokenException.class)
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     public ExceptionResponse handleInvalidToken(NotValidTokenException ex) {
-        try {
-            log.info(ex.getMessage());
-            return objectMapper.readValue(ex.getMessage(), ExceptionResponse.class);
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-            return ExceptionResponse.builder()
-                    .status(HttpStatus.FORBIDDEN.value())
-                    .timestamp(LocalDateTime.now())
-                    .errors(Collections.singletonList("Invalid error response"))
-                    .build();
-        }
+        log.info(ex.getMessage());
+        return ExceptionResponse.builder()
+                .status(HttpStatus.FORBIDDEN.value())
+                .timestamp(LocalDateTime.now())
+                .errors(Collections.singletonList(ex.getMessage()))
+                .build();
     }
 
     @ResponseBody

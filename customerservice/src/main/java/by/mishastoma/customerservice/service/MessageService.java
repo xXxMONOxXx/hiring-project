@@ -24,6 +24,7 @@ public class MessageService {
     private final CustomerService customerService;
     private final OrderRepository orderRepository;
     private final EntityMapper entityMapper;
+    private final CustomerAuthService customerAuthService;
 
     public List<MessageResponse> getMessages(String authHeader, Long applicationId) {
         DecryptResponse decryptResponse = customerService.decryptAuthHeader(authHeader);
@@ -39,7 +40,7 @@ public class MessageService {
     }
 
     public MessageResponse createMessage(MessageRequest request) {
-        DecryptResponse decryptResponse = customerService.decryptToken(request.getToken());
+        DecryptResponse decryptResponse = customerAuthService.decryptToken(request.getToken());
         if (!customerIsAllowedToChat(decryptResponse.getId(), request.getApplicationId())) {
             throw new ForbiddenException("Customer is not allowed to chat in this chat");
         }
@@ -65,7 +66,7 @@ public class MessageService {
     }
 
     private Message customerIsAllowedToChangeMessage(String token, Long messageId) {
-        DecryptResponse decryptResponse = customerService.decryptToken(token);
+        DecryptResponse decryptResponse = customerAuthService.decryptToken(token);
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(MessageNotFoundException::new);
         if (Boolean.FALSE.equals(message.getIsOwner())) {
