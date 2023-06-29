@@ -23,6 +23,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: password
+                  type: varchar(72)
+                  constraints:
+                    nullable: false
+              - column:
                   name: company_name
                   type: varchar(128)
                   constraints:
