@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 6
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: skills
+      changes:
+        - createTable:
+            tableName: skills
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: skill
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: skills
+            columnNames: id
+            constraintName: pk_skill_id
+        - addUniqueConstraint:
+            tableName: skills
+            columnNames: skill
+            constraintName: uq_skill

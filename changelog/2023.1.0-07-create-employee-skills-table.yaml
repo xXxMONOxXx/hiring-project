@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 7
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: employee_skills
+      changes:
+        - createTable:
+            tableName: employee_skills
+            columns:
+              - column:
+                  name: skill_id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: employee_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: employee_skills
+            columnNames: skill_id, employee_id
+            constraintName: pk_employee_skill
+        - addUniqueConstraint:
+            tableName: employee_skills
+            columnNames: skill_id, employee_id
+            constraintName: uq_employee_skill
+        - addForeignKeyConstraint:
+            baseTableName: employee_skills
+            baseColumnNames: skill_id
+            constraintName: fk_skill_id
+            referencedTableName: skills
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: employee_skills
+            baseColumnNames: employee_id
+            constraintName: fk_employee_id
+            referencedTableName: employees
+            referencedColumnNames: id
+

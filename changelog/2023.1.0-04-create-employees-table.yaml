@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: employees
+      changes:
+        - createTable:
+            tableName: employees
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(32)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(72)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: employees
+            columnNames: id
+            constraintName: pk_employee_id
+        - addUniqueConstraint:
+            tableName: employees
+            columnNames: id
+            constraintName: uq_employee_id
+        - addUniqueConstraint:
+            tableName: employees
+            columnNames: username
+            constraintName: uq_employee_username

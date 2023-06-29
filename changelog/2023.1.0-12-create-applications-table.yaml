@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 12
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: applications
+      changes:
+        - createTable:
+            tableName: applications
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_position_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: applications
+            columnNames: id
+            constraintName: pk_application_id
+        - addUniqueConstraint:
+            tableName: applications
+            columnNames: id
+            constraintName: uq_application_id
+        - addUniqueConstraint:
+            tableName: applications
+            columnNames: order_position_id, company_id
+            constraintName: uq_company_order
+        - addForeignKeyConstraint:
+            baseTableName: applications
+            baseColumnNames: order_position_id
+            constraintName: fk_order_position_id
+            referencedTableName: order_positions
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: applications
+            baseColumnNames: company_id
+            constraintName: fk_company_id
+            referencedTableName: companies
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: applications
+            baseColumnNames: status_id
+            constraintName: fk_application_status_id
+            referencedTableName: application_statuses
+            referencedColumnNames: id

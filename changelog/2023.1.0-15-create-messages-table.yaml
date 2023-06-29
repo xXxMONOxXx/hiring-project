@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: 15
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: messages
+      changes:
+        - createTable:
+            tableName: messages
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: application_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sender_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_owner
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: message
+                  type: varchar(512)
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: messages
+            columnNames: id
+            constraintName: pk_message_id
+        - addUniqueConstraint:
+            tableName: messages
+            columnNames: id
+            constraintName: uq_message_id
+        - addForeignKeyConstraint:
+            baseTableName: messages
+            baseColumnNames: application_id
+            constraintName: fk_application_messages_id
+            referencedTableName: applications
+            referencedColumnNames: id

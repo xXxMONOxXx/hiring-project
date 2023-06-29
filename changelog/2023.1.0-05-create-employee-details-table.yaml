@@ -1,0 +1,71 @@
+databaseChangeLog:
+  - changeSet:
+      id: 5
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: employee_details
+      changes:
+        - createTable:
+            tableName: employee_details
+            columns:
+              - column:
+                  name: employee_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: firstname
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: lastname
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_blocked
+                  defaultValueBoolean: false
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(256)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birthdate
+                  type: date
+                  constraints:
+                    nullable: false
+        - addPrimaryKey:
+            tableName: employee_details
+            columnNames: employee_id
+            constraintName: pk_employee_details_id
+        - addUniqueConstraint:
+            tableName: employee_details
+            columnNames: employee_id
+            constraintName: uq_employee_details_id
+        - addUniqueConstraint:
+            tableName: employee_details
+            columnNames: email
+            constraintName: uq_employee_email
+        - addUniqueConstraint:
+            tableName: employee_details
+            columnNames: phone
+            constraintName: uq_employee_phone
+        - addForeignKeyConstraint:
+            baseTableName: employee_details
+            baseColumnNames: employee_id
+            constraintName: fk_employee_id
+            referencedTableName: employees
+            referencedColumnNames: id

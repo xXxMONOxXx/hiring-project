@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+      id: 8
+      author: mishastoma
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: companies
+      changes:
+        - createTable:
+            tableName: companies
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(72)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: company_name
+                  type: varchar(128)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(256)
+        - addPrimaryKey:
+            tableName: companies
+            columnNames: id
+            constraintName: pk_company_id
+        - addUniqueConstraint:
+            tableName: companies
+            columnNames: id
+            constraintName: uq_company_id
